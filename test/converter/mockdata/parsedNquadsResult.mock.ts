@@ -41,27 +41,27 @@ export const parsedNquadsResult: TripleModel[] = [
   export const parsedNquadsSpecialCharacterResult: TripleModel[] = [
     {
       s: 'http://pid.bayer.com/kos/19014/1/ggvcm',
-      p: 'http://10.122.106.18:3000/offers',
+      p: 'http://example.com/offers',
       o: 'ǅenan ǅafić'
     },
     {
       s: 'http://pid.bayer.com/kos/19014/1/ggvcm',
       p: 'ǅenan ǅafić',
-      o: 'http://10.122.106.18:3000/offers'
+      o: 'http://example.com/offers'
     },
     {
       s: 'ǅenan ǅafić',
       p: 'http://pid.bayer.com/kos/19014/1/ggvcm',
-      o: 'http://10.122.106.18:3000/offers'
+      o: 'http://example.com/offers'
     },
     {
       s: 'http://pid.bayer.com/kos/19014/1/ggvcm',
-      p: 'http://10.122.106.18:3000/offers',
+      p: 'http://example.com/offers',
       o: 'Geräteüberhöhung'
     },
     {
       s: 'http://pid.bayer.com/kos/19014/1/ggvcm',
-      p: 'http://10.122.106.18:3000/offers',
+      p: 'http://example.com/offers',
       o: 'le tréma'
     },
   ];

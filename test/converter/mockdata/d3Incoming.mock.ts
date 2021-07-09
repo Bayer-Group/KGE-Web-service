@@ -10,7 +10,7 @@ export const d3Incoming: D3Result = {
     links: [
       {
         prettyLabel: 'Test',
-        label: 'http://10.122.106.18:3000/Test',
+        label: 'http://example.com/Test',
         source: 'https://pid.bayer.com/70107/001/1/SubstanceCombination_13057',
         target: 'http://pid.bayer.com/kos/19014/1/ggvcm'
       }

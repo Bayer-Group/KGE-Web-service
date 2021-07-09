@@ -57,7 +57,7 @@ describe('Path Service', async () => {
             .post('/testpath')
             .reply(200, pathResponse);
 
-        const result = await ps.getRawPathDataAsync(testPathConfig, "http://pid.bayer.com/kos/19014/1/ggvcm", "http://10.122.106.18:3000/Person/erik");
+        const result = await ps.getRawPathDataAsync(testPathConfig, "http://pid.bayer.com/kos/19014/1/ggvcm", "http://example.com/Person/erik");
         expect(result).to.eql(pathResponse);
     });
      
@@ -67,7 +67,7 @@ describe('Path Service', async () => {
             .post('/testpath')
             .replyWithError('something awful happened');
 
-        const result = await ps.getRawPathDataAsync(testPathConfig, "http://pid.bayer.com/kos/19014/1/ggvcm", "http://10.122.106.18:3000/Person/erik");
+        const result = await ps.getRawPathDataAsync(testPathConfig, "http://pid.bayer.com/kos/19014/1/ggvcm", "http://example.com/Person/erik");
         expect(result).to.eql(null);
     });
 

@@ -1,7 +1,7 @@
 export const d3OutgoingAdditional = {
     "nodes": [
       {
-        "uri": "http://10.122.106.18:3000/KnowledgeSpace",
+        "uri": "http://example.com/KnowledgeSpace",
         "data": {
           "mainLabel": "Knowledge Space",
           "http://www.w3.org/2000/01/rdf-schema#label": {
@@ -32,7 +32,7 @@ export const d3OutgoingAdditional = {
         }
       },
       {
-        "uri": "http://10.122.106.18:3000/Product/LinkedDataBasics",
+        "uri": "http://example.com/Product/LinkedDataBasics",
         "data": {
           "mainLabel": "Training on Basics of Linked Data",
           "http://www.w3.org/2000/01/rdf-schema#label": {
@@ -44,7 +44,7 @@ export const d3OutgoingAdditional = {
         }
       },
       {
-        "uri": "http://10.122.106.18:3000/bln_m427",
+        "uri": "http://example.com/bln_m427",
         "data": {
           "hasPicture": "https://transkript.de/fileadmin//transkript/01_Nachrichten/2020/2020_02_11_bayer_berlin.jpg",
           "mainLabel": "Building M427",
@@ -54,7 +54,7 @@ export const d3OutgoingAdditional = {
               "Building M427"
             ]
           },
-          "http://10.122.106.18:3000/street": {
+          "http://example.com/street": {
             "prettyLabel": "street",
             "values": [
               "Gerichtstr."
@@ -63,7 +63,7 @@ export const d3OutgoingAdditional = {
         }
       },
       {
-        "uri": "http://10.122.106.18:3000/companies/Bayer",
+        "uri": "http://example.com/companies/Bayer",
         "data": {
           "hasPicture": "https://bayernet.int.bayer.com/-/media/bag-intra/ws_bayernet/site-configuration/logo/bayer-logo.svg?la=de-DE&hash=D39973A6139797AC177B7D529C2F27F6",
           "mainLabel": "Bayer AG",
@@ -80,13 +80,13 @@ export const d3OutgoingAdditional = {
         "data": {
           "mainLabel": "Gökhan Coskun",
           "hasPicture": "https://mug0eu-1.assets-yammer.com/mugshot/images/Ph0GLscW22mMsf2MPwTxw9K2DPD1J1fl",
-          "http://10.122.106.18:3000/firstName": {
+          "http://example.com/firstName": {
             "prettyLabel": "firstName",
             "values": [
               "Gökhan"
             ]
           },
-          "http://10.122.106.18:3000/lastName": {
+          "http://example.com/lastName": {
             "prettyLabel": "lastName",
             "values": [
               "Coskun"
@@ -104,9 +104,9 @@ export const d3OutgoingAdditional = {
     "links": [
       {
         "prettyLabel": "worksOn",
-        "label": "http://10.122.106.18:3000/worksOn",
+        "label": "http://example.com/worksOn",
         "source": "http://pid.bayer.com/kos/19014/1/ggvcm",
-        "target": "http://10.122.106.18:3000/KnowledgeSpace"
+        "target": "http://example.com/KnowledgeSpace"
       },
       {
         "prettyLabel": "type",
@@ -116,21 +116,21 @@ export const d3OutgoingAdditional = {
       },
       {
         "prettyLabel": "offers",
-        "label": "http://10.122.106.18:3000/offers",
+        "label": "http://example.com/offers",
         "source": "http://pid.bayer.com/kos/19014/1/ggvcm",
-        "target": "http://10.122.106.18:3000/Product/LinkedDataBasics"
+        "target": "http://example.com/Product/LinkedDataBasics"
       },
       {
         "prettyLabel": "isLocateIn",
-        "label": "http://10.122.106.18:3000/isLocateIn",
+        "label": "http://example.com/isLocateIn",
         "source": "http://pid.bayer.com/kos/19014/1/ggvcm",
-        "target": "http://10.122.106.18:3000/bln_m427"
+        "target": "http://example.com/bln_m427"
       },
       {
         "prettyLabel": "affiliatedWith",
-        "label": "http://10.122.106.18:3000/affiliatedWith",
+        "label": "http://example.com/affiliatedWith",
         "source": "http://pid.bayer.com/kos/19014/1/ggvcm",
-        "target": "http://10.122.106.18:3000/companies/Bayer"
+        "target": "http://example.com/companies/Bayer"
       }
     ]
   };
@@ -156,15 +156,15 @@ export const d3OutgoingAdditional = {
         "data": {
           "mainLabel": "Unlabelled Node",
         },
-        "uri": "http://10.122.106.18:3000/KnowledgeSpace",
+        "uri": "http://example.com/KnowledgeSpace",
       },
     ],
     "links": [
       {
         "prettyLabel": "worksOn",
-        "label": "http://10.122.106.18:3000/worksOn",
+        "label": "http://example.com/worksOn",
         "source": "http://pid.bayer.com/kos/19014/1/ggvcm",
-        "target": "http://10.122.106.18:3000/KnowledgeSpace"
+        "target": "http://example.com/KnowledgeSpace"
       }
     ]
   };
@@ -176,13 +176,13 @@ export const d3OutgoingAdditional = {
         "uri": "http://pid.bayer.com/kos/19014/1/ggvcm",
         "data": {
           "hasPicture": 'https://mug0eu-1.assets-yammer.com/mugshot/images/Ph0GLscW22mMsf2MPwTxw9K2DPD1J1fl',
-          "http://10.122.106.18:3000/firstName": {
+          "http://example.com/firstName": {
             "prettyLabel": "firstName",
             "values": [
               "Gökhan"
             ]
           },
-          "http://10.122.106.18:3000/lastName": {
+          "http://example.com/lastName": {
             "prettyLabel": "lastName",
             "values": [
               "Coskun"
@@ -207,10 +207,10 @@ export const d3OutgoingAdditional = {
           },
           "mainLabel": "Knowledge Space",
         },
-        "uri": "http://10.122.106.18:3000/KnowledgeSpace",
+        "uri": "http://example.com/KnowledgeSpace",
       },
       {
-        "uri": "http://10.122.106.18:3000/bln_m427",
+        "uri": "http://example.com/bln_m427",
         "data": {
           "hasPicture": "https://transkript.de/fileadmin//transkript/01_Nachrichten/2020/2020_02_11_bayer_berlin.jpg",
           "mainLabel": "Building M427",
@@ -220,7 +220,7 @@ export const d3OutgoingAdditional = {
               "Building M427"
             ]
           },
-          "http://10.122.106.18:3000/street": {
+          "http://example.com/street": {
             "prettyLabel": "street",
             "values": [
               "Gerichtstr."
@@ -229,7 +229,7 @@ export const d3OutgoingAdditional = {
         }
       },
       {
-        "uri": "http://10.122.106.18:3000/companies/Bayer",
+        "uri": "http://example.com/companies/Bayer",
         "data": {
           "hasPicture": "https://bayernet.int.bayer.com/-/media/bag-intra/ws_bayernet/site-configuration/logo/bayer-logo.svg?la=de-DE&hash=D39973A6139797AC177B7D529C2F27F6",
           "mainLabel": "Bayer AG",
@@ -261,7 +261,7 @@ export const d3OutgoingAdditional = {
         }
       },
       {
-        "uri": "http://10.122.106.18:3000/Product/LinkedDataBasics",
+        "uri": "http://example.com/Product/LinkedDataBasics",
         "data": {
           "mainLabel": "Training on Basics of Linked Data",
           "http://www.w3.org/2000/01/rdf-schema#label": {
@@ -276,9 +276,9 @@ export const d3OutgoingAdditional = {
     "links": [
       {
         "prettyLabel": "worksOn",
-        "label": "http://10.122.106.18:3000/worksOn",
+        "label": "http://example.com/worksOn",
         "source": "http://pid.bayer.com/kos/19014/1/ggvcm",
-        "target": "http://10.122.106.18:3000/KnowledgeSpace"
+        "target": "http://example.com/KnowledgeSpace"
       },
       {
         "prettyLabel": "type",
@@ -288,21 +288,21 @@ export const d3OutgoingAdditional = {
       },
       {
         "prettyLabel": "offers",
-        "label": "http://10.122.106.18:3000/offers",
+        "label": "http://example.com/offers",
         "source": "http://pid.bayer.com/kos/19014/1/ggvcm",
-        "target": "http://10.122.106.18:3000/Product/LinkedDataBasics"
+        "target": "http://example.com/Product/LinkedDataBasics"
       },
       {
         "prettyLabel": "isLocateIn",
-        "label": "http://10.122.106.18:3000/isLocateIn",
+        "label": "http://example.com/isLocateIn",
         "source": "http://pid.bayer.com/kos/19014/1/ggvcm",
-        "target": "http://10.122.106.18:3000/bln_m427"
+        "target": "http://example.com/bln_m427"
       },
       {
         "prettyLabel": "affiliatedWith",
-        "label": "http://10.122.106.18:3000/affiliatedWith",
+        "label": "http://example.com/affiliatedWith",
         "source": "http://pid.bayer.com/kos/19014/1/ggvcm",
-        "target": "http://10.122.106.18:3000/companies/Bayer"
+        "target": "http://example.com/companies/Bayer"
       }
     ]
   };

@@ -14,7 +14,7 @@ export const pathResponse = {
         {
           "p": {
             "type": "uri",
-            "value": "http://10.122.106.18:3000/worksOn"
+            "value": "http://example.com/worksOn"
           },
           "forward": {
             "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
@@ -27,13 +27,13 @@ export const pathResponse = {
           },
           "y": {
             "type": "uri",
-            "value": "http://10.122.106.18:3000/KnowledgeSpace"
+            "value": "http://example.com/KnowledgeSpace"
           }
         },
         {
           "p": {
             "type": "uri",
-            "value": "http://10.122.106.18:3000/worksOn"
+            "value": "http://example.com/worksOn"
           },
           "forward": {
             "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
@@ -42,11 +42,11 @@ export const pathResponse = {
           },
           "x": {
             "type": "uri",
-            "value": "http://10.122.106.18:3000/KnowledgeSpace"
+            "value": "http://example.com/KnowledgeSpace"
           },
           "y": {
             "type": "uri",
-            "value": "http://10.122.106.18:3000/Person/erik"
+            "value": "http://example.com/Person/erik"
           }
         }
       ]
@@ -65,13 +65,13 @@ export const fullPathResult = {
               "Gökhan Coskun"
             ]
           },
-          "http://10.122.106.18:3000/firstName": {
+          "http://example.com/firstName": {
             "prettyLabel": "firstName",
             "values": [
               "Gökhan"
             ]
           },
-          "http://10.122.106.18:3000/lastName": {
+          "http://example.com/lastName": {
             "prettyLabel": "lastName",
             "values": [
               "Coskun"
@@ -80,7 +80,7 @@ export const fullPathResult = {
         }
       },
       {
-        "uri": "http://10.122.106.18:3000/KnowledgeSpace",
+        "uri": "http://example.com/KnowledgeSpace",
         "data": {
           "mainLabel": "Knowledge Space",
           "http://www.w3.org/2000/01/rdf-schema#label": {
@@ -92,7 +92,7 @@ export const fullPathResult = {
         }
       },
       {
-        "uri": "http://10.122.106.18:3000/Person/erik",
+        "uri": "http://example.com/Person/erik",
         "data": {
           "mainLabel": "Erik Krummeich",
           "http://www.w3.org/2000/01/rdf-schema#label": {
@@ -101,13 +101,13 @@ export const fullPathResult = {
               "Erik Krummeich"
             ]
           },
-          "http://10.122.106.18:3000/firstName": {
+          "http://example.com/firstName": {
             "prettyLabel": "firstName",
             "values": [
               "Erik"
             ]
           },
-          "http://10.122.106.18:3000/lastName": {
+          "http://example.com/lastName": {
             "prettyLabel": "lastName",
             "values": [
               "Krummeich"
@@ -119,15 +119,15 @@ export const fullPathResult = {
     "links": [
       {
         "prettyLabel": "worksOn",
-        "label": "http://10.122.106.18:3000/worksOn",
+        "label": "http://example.com/worksOn",
         "source": "http://pid.bayer.com/kos/19014/1/ggvcm",
-        "target": "http://10.122.106.18:3000/KnowledgeSpace"
+        "target": "http://example.com/KnowledgeSpace"
       },
       {
         "prettyLabel": "worksOn",
-        "label": "http://10.122.106.18:3000/worksOn",
-        "source": "http://10.122.106.18:3000/Person/erik",
-        "target": "http://10.122.106.18:3000/KnowledgeSpace"
+        "label": "http://example.com/worksOn",
+        "source": "http://example.com/Person/erik",
+        "target": "http://example.com/KnowledgeSpace"
       }
     ]
   };
