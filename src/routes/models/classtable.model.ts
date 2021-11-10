@@ -4,6 +4,7 @@ export class ClassTableRequest {
     classUri: string;
     attributes: ClassTableAttributes[];
     dbConfig: DbConfig[];
+    user:string;
 }
 
 export class ClassTableAttributes {

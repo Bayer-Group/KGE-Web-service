@@ -15,7 +15,7 @@ export class GraphDataService implements IGraphDataService {
 
     private tripleStore: ITripleStoreConnector;
     private requestBodyConfig: DbConfig[];
-
+    private tripleStoreConfig :TripleStore;
     constructor(mTripleStore: TripleStore, mConfig: DbConfig[]) {
         let kgeConfig = [
             {
@@ -26,7 +26,7 @@ export class GraphDataService implements IGraphDataService {
             },]
         this.tripleStore = new TripleStoreConnector(mTripleStore, kgeConfig);
         this.requestBodyConfig = mConfig;
-
+        this.tripleStoreConfig = mTripleStore;
     }
     
 
@@ -70,8 +70,11 @@ export class GraphDataService implements IGraphDataService {
         }
     }
 
-    async getSavedGraphData(uuid: string): Promise<D3Result> {
-        const res = await this.tripleStore.getSavedResourcesAsync(uuid);
+    async getSavedGraphData(uuid: string, host: string): Promise<D3Result> {
+        this.tripleStoreConfig.path = "/colid-dataset/query";
+        let tripleStore = new TripleStoreConnector(this.tripleStoreConfig, this.requestBodyConfig);
+        let res = await tripleStore.getSavedResourcesAsync(uuid,host);
+        this.tripleStoreConfig.path = "/colid-dataset/query";
         if (res) {
             return NQuadsToD3ConverterService.getInstance().convertOutgoing(res as string);
         } else {
@@ -79,8 +82,10 @@ export class GraphDataService implements IGraphDataService {
         }
     }
 
-    async postSaveGraphData(uuid: string, data: string): Promise<Boolean> {
-        return this.tripleStore.postSavedResourcesAsync(uuid, data);
+    async postSaveGraphData(uuid: string, data: string, host: string): Promise<Boolean> {
+        this.tripleStoreConfig.updatePath = "/colid-dataset/update";
+        let tripleStore = new TripleStoreConnector(this.tripleStoreConfig, this.requestBodyConfig);
+        return tripleStore.postSavedResourcesAsync(uuid, data, host);
     }
 
     async getNamedGraphs(uri:string): Promise<String[]> {
@@ -107,8 +112,8 @@ export class GraphDataService implements IGraphDataService {
         return nodes.filter(node => Object.keys(node.data).length == 1).map(node => node.uri)
     }
 
-    async getTripleStores(): Promise<any[]> {
-        const nquads = await this.tripleStore.getTripleStores();
+    async getTripleStores(user:string): Promise<any[]> {
+        const nquads = await this.tripleStore.getTripleStores(user);
         const parsed = parseNquads(nquads);
         var dbPaths = [];
         for (let index = 0; index < parsed.length; index++) {

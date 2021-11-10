@@ -38,14 +38,14 @@ export interface IGraphDataService {
      * @param uuid unique identifier of the stored data
      * @returns D3Result containing Nodes and Links
      */
-    getSavedGraphData(uuid: string): Promise<D3Result>
+    getSavedGraphData(uuid: string, host: string): Promise<D3Result>
 
     /**
      * Posts Data to the TripleStore with a unique identifier
      * @param uuid identifier
      * @param data data in base64 
      */
-    postSaveGraphData(uuid: string, data: string): Promise<Boolean>
+    postSaveGraphData(uuid: string, data: string, host: string): Promise<Boolean>
 
     /**
      * Gets all Named Graphs in the TripleStore
@@ -63,5 +63,5 @@ export interface IGraphDataService {
     /**
      * Fetch all triplestores from Configuration Databse
     */
-     getTripleStores(): Promise<any[]>
+     getTripleStores(user :string): Promise<any[]>
 }

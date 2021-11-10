@@ -9,7 +9,7 @@ import { sparqlAutocompleteIncomingInitial, sparqlAutocompleteIncoming, sparqlAu
 import cons from "../constants/constants";
 import { sparqlCountIncomingLinks, sparqlCountOutgoingLinks } from "./sparql/count.sparql";
 import { sparqlIncomingWithFilter, sparqlIncoming, sparqlOutgoing, sparqlRandomPosition, sparqlRandomSubject, 
-    sparqlGetSavedData, sparqlPostData, sparqlGetNamedGraphs, sparqlOutgoingVG, sparqlGetVirtualGraphs, sparqlAll, sparqlColid, sparqlGetTripleStores } 
+    sparqlGetSavedData, sparqlPostData, sparqlGetNamedGraphs, sparqlOutgoingVG, sparqlGetVirtualGraphs, sparqlAll, sparqlColid, sparqlGetTripleStores, sparqlPostClassTable, sparqlGetBasicConfiguration, sparqlFetchTableViewsQuery, sparqlIncomingClasses } 
     from "./sparql/graphdata.sparql";
 import {createLinkObject, isValue, parseNquads} from "../services/helpers.service";
 import {PathResult} from "./models/pathResponse.model";
@@ -39,7 +39,7 @@ class TripleStoreConnector implements ITripleStoreConnector {
                 'Access-Control-Allow-Origin' : '*',
                 'Access-Control-Allow-Methods' : 'GET,PUT,POST,DELETE,PATCH,OPTIONS',
                 'Access-Control-Allow-Headers' : "Origin, X-Requested-With, Content-Type, Accept,Authorization",
-                'Access-Control-Allow-Credentials' : true,
+                'Access-Control-Allow-Credentials' : "true",
             }
         });
     }
@@ -77,6 +77,9 @@ class TripleStoreConnector implements ITripleStoreConnector {
         return this.fetchNquadsAsync(sparqlIncoming(uri, dbconfig));
     }
 
+    async getClassTableIncomingAsync(uri: string, dbconfig: DbConfig[]): Promise<NquadsString> {
+        return this.fetchNquadsAsync(sparqlIncomingClasses(uri, dbconfig));
+    }
     async getAllAsync(dbconfig: DbConfig[]): Promise<NquadsString> {
         return this.fetchNquadsAsync(sparqlAll(dbconfig));
     }
@@ -145,12 +148,16 @@ class TripleStoreConnector implements ITripleStoreConnector {
 
     }
 
-    async getSavedResourcesAsync(id: string): Promise<NquadsString> {
-        return this.fetchNquadsAsync(sparqlGetSavedData(id));
+    async getSavedResourcesAsync(id: string, host: string): Promise<NquadsString> {
+        return this.fetchNquadsAsync(sparqlGetSavedData(id,host));
     }
 
-    async postSavedResourcesAsync(id: string, data: string): Promise<Boolean> {
-        return this.postDataAsync(sparqlPostData(id, data));
+    async postSavedResourcesAsync(id: string, data: string, host: string): Promise<Boolean> {
+        return this.postDataAsync(sparqlPostData(id, data, host));
+    }
+
+    async postClassTable(host:string, query:string,uuid:string,user:string):Promise<Boolean>{
+        return this.postDataAsync(sparqlPostClassTable(host, query,uuid,user))
     }
 
     async getVirtualGraphsAsync(tripleStores: TripleStores): Promise<NquadsString>{
@@ -165,8 +172,12 @@ class TripleStoreConnector implements ITripleStoreConnector {
         return this.fetchDataWithoutAcceptType(sparqlGetPath(pathConfig, from, to));
     }
 
-    async getTripleStores(): Promise<NquadsString> {
-        return this.fetchNquadsAsync(sparqlGetTripleStores());
+    async getTripleStores(user:string): Promise<NquadsString> {
+        return this.fetchNquadsAsync(sparqlGetTripleStores(user));
+    }
+
+    async getBasicConfiguration(datasetLabel:string): Promise<NquadsString> {
+        return this.fetchNquadsAsync(sparqlGetBasicConfiguration(datasetLabel));
     }
 
     async getPathInNquards(pathconfig: PathConfig, from: string, to: string): Promise<NquadsString> {
@@ -244,7 +255,7 @@ class TripleStoreConnector implements ITripleStoreConnector {
                 baseURL: `${this.tripleStore.protocol}://${this.tripleStore.serviceHost}:${this.tripleStore.port}${this.tripleStore.path}`
             });
             logger.info("Successfully called TripleStore getClassTableSparql");
-            return response.data;
+            return  <NquadsString>response.data;
           } catch (error) {
             logger.error("Error for method getClassTableSparql");
             logger.error(error);
@@ -255,7 +266,7 @@ class TripleStoreConnector implements ITripleStoreConnector {
 
     async fetchClassTable(sparql: string, accept: string): Promise<any> {
         try {
-            console.log("DB query sent:")
+            console.log("Class Table Labels Query")
             console.log(sparql)
             const response = await this.httpClient.post('', sparql, {
                 headers: {
@@ -266,11 +277,19 @@ class TripleStoreConnector implements ITripleStoreConnector {
           } catch (error) {
             logger.error("Error for method fetchClassTable");
             logger.error(error);
-            // console.log(error)
-            return error;
+            return null;
         }
     }
 
+    async getTableViewsSparql(host: string,uuid: string): Promise<any> {
+        try {        
+            return await this.fetchNquadsAsync(sparqlFetchTableViewsQuery(host,uuid));
+          } catch (error) {
+            logger.error("Error for method fetchClassTable");
+            logger.error(error);
+            return null;
+        }
+    }
    /**
     * Calls a TripleStore via HTTP POST and sets the Accept Header to Nquads to always retrieve nquads
     * @param sparql Input SparQL Query
@@ -288,10 +307,10 @@ class TripleStoreConnector implements ITripleStoreConnector {
                   'Access-Control-Allow-Origin' : '*',
                   'Access-Control-Allow-Methods' : 'GET,PUT,POST,DELETE,PATCH,OPTIONS',
                   'Access-Control-Allow-Headers' : 'Origin, X-Requested-With, Content-Type, Accept,Authorization',
-                  'Access-Control-Allow-Credentials' : true,
+                  'Access-Control-Allow-Credentials' : "true",
             }});
             logger.info("Successfully called TripleStore fetchNquadsAsync");
-            return response.data;
+            return <NquadsString>response.data;
           } catch (error) {
             logger.error("Error for method fetchNquadsAsync");
             logger.error(error);
@@ -338,7 +357,7 @@ class TripleStoreConnector implements ITripleStoreConnector {
 * @param sparql Input SparQL Query
 * @returns true if the data has been pushed successfully
 */
-private async fetchDataWithoutAcceptType(sparql: string): Promise<PathResult> {
+private async fetchDataWithoutAcceptType(sparql: string): Promise<any> {
     try {
         const response = await this.httpClient.post('', sparql, {
             headers: {

@@ -139,7 +139,7 @@ where {
 } 
   
   graph <https://pid.bayer.com/kge/triplestores> {
-    ?triplestore rdf:type kge:Triplestore;
+    ?triplestore a kge:Triplestore;
 		rdfs:label ?label ;
         kge:password    ?password ;
         kge:queryPath   ?queryPath ;
@@ -154,8 +154,8 @@ where {
         kge:protocol  ?protocol .
   }
  
-  bind ( uri(concat(str(?protocol),"://",?username,":",?password,"@",str(?host),":",str(?port),str(?queryPath))) as ?connectionURI )
-  
+  bind ( coalesce(uri(concat(str(?protocol),"://",?username,":",?password,"@",str(?host),":",str(?port),str(?queryPath))), "") as ?connectionURI )
+   
   Service ?connectionURI{
       graph ?namedGraphs{
         ?s ?p ?o   .    
@@ -172,7 +172,7 @@ export const sparqlAutocompleteOutgoingDefaultGraph = (defaultGraphsList) => {
   UNION {
     values (?triplestoreDefault) {${defaultGraphsList}}
     graph <https://pid.bayer.com/kge/triplestores> {
-    ?triplestoreDefault rdf:type kge:Triplestore;
+    ?triplestoreDefault a kge:Triplestore;
     rdfs:label ?label ;
     kge:password ?password ;
     kge:queryPath ?queryPath ;
@@ -187,7 +187,7 @@ export const sparqlAutocompleteOutgoingDefaultGraph = (defaultGraphsList) => {
     kge:protocol ?protocol .
     }
     
-    bind ( uri(concat(str(?protocol),"://",?username,":",?password,"@",str(?host),":",str(?port),str(?queryPath))) as ?connectionURI )
+    bind ( coalesce(uri(concat(str(?protocol),"://",?username,":",?password,"@",str(?host),":",str(?port),str(?queryPath))), "") as ?connectionURI )
     
      Service ?connectionURI {
     ?s ?p ?o

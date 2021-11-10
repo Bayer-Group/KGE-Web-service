@@ -43,6 +43,8 @@ app.use('/count', count);
 app.use('/autocomplete', autocomplete);
 app.use('/classtable', classtable);
 
+//rwd api experimentation
+
 app.listen(config().app.port, function () {
-    logger.info('Application has been started', {port: config().app.port, environment: process.env.NODE_ENV == undefined ? "docker" : process.env.NODE_ENV});
+    logger.info('Application has been started', {port: config().app.port, environment: process.env.NODE_ENV == undefined ? "local" : process.env.NODE_ENV});
 });

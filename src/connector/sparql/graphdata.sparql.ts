@@ -14,7 +14,7 @@ import { joinAsValuesList, joinDefaultGraphs } from "../../services/helpers.serv
 export const sparqlIncomingWithFilter = (uri, filteredUri, dbconfig) =>  {
   const optional = `OPTIONAL{<${filteredUri}> ?p2 ?o 
       FILTER (!isLITERAL(?o) || LANG(?o) = "" || LANG(?o) = "en")}
-    OPTIONAL{?o2 rdf:type <${filteredUri}>} `;
+    OPTIONAL{?o2 a <${filteredUri}>} `;
   const queryBody = `
     <${filteredUri}> ?p <${uri}> .
   `;
@@ -22,7 +22,7 @@ export const sparqlIncomingWithFilter = (uri, filteredUri, dbconfig) =>  {
   construct {
     <${filteredUri}> ?p <${uri}> .
     <${filteredUri}> ?p2 ?o .
-    ?o2 rdf:type <${filteredUri}> .
+    ?o2 a <${filteredUri}> .
   }
   where {
       ${insertIntoGraph(queryBody, dbconfig, optional)}
@@ -45,7 +45,9 @@ export const sparqlIncomingWithFilter = (uri, filteredUri, dbconfig) =>  {
   return constants.QUERY_PREFIXES+`
   prefix kge:   <https://pid.bayer.com/kge/> 
   construct {
-  ?s ?p <${uri}>.
+  ?s ?p <${uri}>;
+  ?p2 ?o .
+  ?o2 a ?s .
 }
 
 where {
@@ -54,7 +56,7 @@ where {
 } 
   
   graph <https://pid.bayer.com/kge/triplestores> {
-    ?triplestore rdf:type kge:Triplestore;
+    ?triplestore a kge:Triplestore ;
 		rdfs:label ?label ;
         kge:password    ?password ;
         kge:queryPath   ?queryPath ;
@@ -69,12 +71,15 @@ where {
         kge:protocol  ?protocol .
   }
  
-  bind ( uri(concat(str(?protocol),"://",?username,":",?password,"@",str(?host),":",str(?port),str(?queryPath))) as ?connectionURI )
+  bind ( coalesce(uri(concat(str(?protocol),"://",?username,":",?password,"@",str(?host),":",str(?port),str(?queryPath))), "") as ?connectionURI )
   
   Service ?connectionURI{
       graph ?namedGraphs{
-        ?s ?p <${uri}>   .  
+        ?s ?p <${uri}>   ;
+        OPTIONAL{?s ?p2 ?o . 
+}  FILTER (!isLITERAL(?o) || LANG(?o) = "" || LANG(?o) = "en")
 }
+OPTIONAL{?o2 a ?s}    
 } }${defaultGraphsList}
   `
 }
@@ -104,7 +109,7 @@ where {
 } 
   
   graph <https://pid.bayer.com/kge/triplestores> {
-    ?triplestore rdf:type kge:Triplestore;
+    ?triplestore a kge:Triplestore;
 		rdfs:label ?label ;
         kge:password    ?password ;
         kge:queryPath   ?queryPath ;
@@ -119,7 +124,7 @@ where {
         kge:protocol  ?protocol .
   }
  
-  bind ( uri(concat(str(?protocol),"://",?username,":",?password,"@",str(?host),":",str(?port),str(?queryPath))) as ?connectionURI )
+  bind ( coalesce(uri(concat(str(?protocol),"://",?username,":",?password,"@",str(?host),":",str(?port),str(?queryPath))), "") as ?connectionURI )
   
   Service ?connectionURI{
       graph ?namedGraphs{
@@ -204,7 +209,7 @@ export const sparqlOutgoingVG = (uris, dbconfig) => {
   } 
     
     graph <https://pid.bayer.com/kge/triplestores> {
-      ?triplestore rdf:type kge:Triplestore;
+      ?triplestore a kge:Triplestore;
       rdfs:label ?label ;
           kge:password    ?password ;
           kge:queryPath   ?queryPath ;
@@ -219,7 +224,7 @@ export const sparqlOutgoingVG = (uris, dbconfig) => {
           kge:protocol  ?protocol .
     }
    
-    bind ( uri(concat(str(?protocol),"://",?username,":",?password,"@",str(?host),":",str(?port),str(?queryPath))) as ?connectionURI )
+    bind ( coalesce(uri(concat(str(?protocol),"://",?username,":",?password,"@",str(?host),":",str(?port),str(?queryPath))), "") as ?connectionURI )
     
     Service ?connectionURI{
         graph ?namedGraphs{
@@ -231,52 +236,30 @@ export const sparqlOutgoingVG = (uris, dbconfig) => {
 
   export const sparqlColid = (uri, graph) => {
     return constants.QUERY_PREFIXES+`
-    prefix kge:   <https://pid.bayer.com/kge/> 
     CONSTRUCT {
       <${uri}> ?p ?o  .
-    ?o rdf:type ?oType .
+    ?o a ?oType .
     ?o <https://pid.bayer.com/kos/19050/distribution> ?oDistribution .
-    ?oDistribution rdf:type ?oDistributionType .
+    ?oDistribution a ?oDistributionType .
     ?oDistribution ?pDistribution ?dataDistributionStr .
     ?o ?p2 ?o2string .
     ?iS ?iP <${uri}> .
-    ?iS rdf:type ?iType .
+    ?iS a ?iType .
     ?iS <https://pid.bayer.com/kos/19050/distribution> ?iSdistribution .
-    ?iSdistribution rdf:type ?iSdistributionType .
+    ?iSdistribution a ?iSdistributionType .
       ?iSdistribution ?ipDistribution ?iDataDistributionStr .
     ?iS ?iP2 ?iOstring .
   }
   where {
-    values (?triplestore ?namedGraphs) {(<https://pid.bayer.com/kge/COLIDDataset><${graph}> )}
-    graph <https://pid.bayer.com/kge/triplestores> {
-      ?triplestore rdf:type kge:Triplestore;
-                rdfs:label ?label ;
-        kge:password    ?password ;
-        kge:queryPath   ?queryPath ;
-        kge:runsOn      ?triplestroreSystem ;
-        kge:updatePath  ?updatePath ;
-        kge:user        ?username ;
-  }
-  graph <https://pid.bayer.com/kge/triplestoreSystems> {
-    ?triplestroreSystem
-        kge:host      ?host ;
-        kge:port      ?port ;
-        kge:protocol  ?protocol .
-  }
-
-  bind ( uri(concat(str(?protocol),"://",?username,":",?password,"@",str(?host),":",str(?port),str(?queryPath))) as 
-?connectionURI )
-
-  Service ?connectionURI{
-      graph  ?namedGraphs  
+      {
+      graph  <${graph}>  
       {
         <${uri}> ?p ?o .
         OPTIONAL {
-          ?o rdf:type ?oType .
+          ?o a ?oType .
         }
         OPTIONAL {
-          ?iS ?iP <${uri}> .
-          ?iS rdf:type ?iType .
+          ?iS a ?iType .
         }
         OPTIONAL {
           ?o ?p2 ?o2 .
@@ -289,14 +272,14 @@ export const sparqlOutgoingVG = (uris, dbconfig) => {
         }	
         OPTIONAL {
           ?o <https://pid.bayer.com/kos/19050/distribution> ?oDistribution .
-          ?oDistribution rdf:type ?oDistributionType .
+          ?oDistribution a ?oDistributionType .
           ?oDistribution ?pDistribution ?dataDistribution .
           FILTER (isLITERAL(?dataDistribution) || LANG(?dataDistribution) = "" || LANG(?dataDistribution) = "en")
         }
         OPTIONAL {
           ?iS ?iP <${uri}> .
           ?iS <https://pid.bayer.com/kos/19050/distribution> ?iSdistribution .
-          ?iSdistribution rdf:type ?iSdistributionType .
+          ?iSdistribution a ?iSdistributionType .
                   ?iSdistribution ?ipDistribution ?iDataDistribution .
           FILTER (isLITERAL(?iDataDistribution) || LANG(?iDataDistribution) = "" || LANG(?iDataDistribution) = "en")
         }
@@ -305,12 +288,12 @@ export const sparqlOutgoingVG = (uris, dbconfig) => {
     }
       OPTIONAL {
            ?o ?p2 ?o2 .
-           FILTER EXISTS { ?sub rdf:type ?o }
+           FILTER EXISTS { ?sub a ?o }
        FILTER (isLITERAL(?o2) || LANG(?o2) = "" || LANG(?o2) = "en")
       }
     OPTIONAL {
            ?iS ?iP2 ?iO .
-       FILTER EXISTS { ?sub rdf:type ?iS }
+       FILTER EXISTS { ?sub a ?iS }
        FILTER (isLITERAL(?iO) || LANG(?iO) = "" || LANG(?iO) = "en") 
       }
       BIND(STR(?o2) as ?o2string)
@@ -318,6 +301,7 @@ export const sparqlOutgoingVG = (uris, dbconfig) => {
     BIND(STR(?dataDistribution) as ?dataDistributionStr)
       BIND(STR(?iDataDistribution) as ?iDataDistributionStr)
   }
+  
   `
    
   }
@@ -340,7 +324,7 @@ where {
 } 
   
   graph <https://pid.bayer.com/kge/triplestores> {
-    ?triplestore rdf:type kge:Triplestore;
+    ?triplestore a kge:Triplestore;
 		rdfs:label ?label ;
         kge:password    ?password ;
         kge:queryPath   ?queryPath ;
@@ -355,7 +339,7 @@ where {
         kge:protocol  ?protocol .
   }
  
-  bind ( uri(concat(str(?protocol),"://",?username,":",?password,"@",str(?host),":",str(?port),str(?queryPath))) as ?connectionURI )
+  bind ( coalesce(uri(concat(str(?protocol),"://",?username,":",?password,"@",str(?host),":",str(?port),str(?queryPath))), "") as ?connectionURI )
   
   Service ?connectionURI{
       graph ?namedGraphs{
@@ -383,7 +367,7 @@ where {
 } 
   
   graph <https://pid.bayer.com/kge/triplestores> {
-    ?triplestore rdf:type kge:Triplestore;
+    ?triplestore a kge:Triplestore;
 		rdfs:label ?label ;
         kge:password    ?password ;
         kge:queryPath   ?queryPath ;
@@ -398,7 +382,7 @@ where {
         kge:protocol  ?protocol .
   }
  
-  bind ( uri(concat(str(?protocol),"://",?username,":",?password,"@",str(?host),":",str(?port),str(?queryPath))) as ?connectionURI )
+  bind ( coalesce(uri(concat(str(?protocol),"://",?username,":",?password,"@",str(?host),":",str(?port),str(?queryPath))), "") as ?connectionURI )
   
   Service ?connectionURI{
       graph ?namedGraphs{
@@ -415,10 +399,10 @@ where {
  * SparQL to get the saved GraphData for a specific uuid
  * @param uuid Identifier of the stored GraphData
  */
-export const sparqlGetSavedData = (uuid) => {
-    return constants.QUERY_PREFIXES+`CONSTRUCT { <http://10.122.106.18:3000/graph/${uuid}> <http://10.122.106.18:3000/hasData> ?o }
+export const sparqlGetSavedData = (uuid,host) => {
+    return constants.QUERY_PREFIXES+`CONSTRUCT { <${host}/${uuid}> <${host}/hasData> ?o }
       WHERE {
-        <http://10.122.106.18:3000/graph/${uuid}> <http://10.122.106.18:3000/hasData> ?o .
+        <${host}/${uuid}> <${host}/hasData> ?o .
       }`;
   }
 // export const sparqlGetSavedData = (uuid) => {
@@ -434,9 +418,9 @@ export const sparqlGetSavedData = (uuid) => {
  * @param uuid Identifier of the stored GraphData
  * @param data Data that should be stored
  */
-export const sparqlPostData = (uuid, data) => {
+export const sparqlPostData = (uuid, data, host) => {
     return `INSERT DATA {
-          <http://10.122.106.18:3000/graph/${uuid}> <http://10.122.106.18:3000/hasData> "${data}"
+          <${host}/${uuid}> <${host}/hasData> "${data}"
         }`;
   }
 
@@ -480,23 +464,41 @@ export const  sparqlGetVirtualGraphs = (triplestores) => {
       }`
   }
 
-  export const sparqlGetTripleStores = () => {
+  export const sparqlGetTripleStores = (user: string) => {
     return constants.QUERY_PREFIXES+`
     PREFIX kge:   <https://pid.bayer.com/kge/> 
     construct {
       ?triplestore  rdfs:label ?triplestoreLabel
      }
-     WHERE {
+     WHERE {{
        graph <https://pid.bayer.com/kge/triplestores>{
-         ?triplestore rdf:type kge:Triplestore;
+         ?triplestore a kge:Triplestore;
            kge:password    ?password ;
              kge:queryPath   ?queryPath ;
              kge:runsOn      ?triplestroreSystem ;
              kge:updatePath  ?updatePath ;
              kge:user        ?username ;
+             kge:restrictedAccess  true ;
            rdfs:label ?triplestoreLabel .
        }
+       graph <https://pid.bayer.com/kge/users> {
+      ?currentUser eco:hasEMailAddress <mailto:${user}>;
+        kge:hasAccessTo ?triplestore
+        }
      }
+     UNION{
+      graph <https://pid.bayer.com/kge/triplestores>{
+      ?triplestore a kge:Triplestore;
+      kge:password    ?password ;
+        kge:queryPath   ?queryPath ;
+        kge:runsOn      ?triplestroreSystem ;
+        kge:updatePath  ?updatePath ;
+        kge:user        ?username ;
+        kge:restrictedAccess  false ;
+        rdfs:label ?triplestoreLabel .
+  }
+}
+}
     `
   }
 
@@ -510,6 +512,7 @@ export const sparqlGetNamedGraphs = (uri) => {
     <${uri}> kge:namedGraphs ?g
   } 
   WHERE {
+    {
     graph <https://pid.bayer.com/kge/triplestores>{
       <${uri}>	    kge:password    ?password ;
           kge:queryPath   ?queryPath ;
@@ -526,16 +529,23 @@ export const sparqlGetNamedGraphs = (uri) => {
   
     }
    
-    bind ( uri(concat(str(?protocol),"://",?username,":",?password,"@",str(?host),":",str(?port),str(?queryPath))) as ?connectionURI )
-    
+    bind ( coalesce(uri(concat(str(?protocol),"://",?username,":",?password,"@",str(?host),":",str(?port),str(?queryPath))), "") as ?connectionURI )
     Service ?connectionURI{
-      Select ?g {
+      Select distinct ?g {
         graph ?g{
           ?s ?p ?o
         }
   }
   }
   }
+  UNION {
+    graph <https://pid.bayer.com/kge/virtualGraphs> {
+     ?vg  kge:belongsToDB <${uri}>;
+          kge:vGraphName  ?g
+    }
+    }
+  }
+
   `
 }
 
@@ -551,7 +561,7 @@ export const sparqlOutgoingIncomingDefaultGraph = (defaultGraphsList, uri, flag 
   UNION {
     values (?triplestoreDefault) {${defaultGraphsList}}
     graph <https://pid.bayer.com/kge/triplestores> {
-    ?triplestoreDefault rdf:type kge:Triplestore;
+    ?triplestoreDefault a kge:Triplestore;
     rdfs:label ?label ;
     kge:password ?password ;
     kge:queryPath ?queryPath ;
@@ -566,10 +576,247 @@ export const sparqlOutgoingIncomingDefaultGraph = (defaultGraphsList, uri, flag 
     kge:protocol ?protocol .
     }
     
-    bind ( uri(concat(str(?protocol),"://",?username,":",?password,"@",str(?host),":",str(?port),str(?queryPath))) as ?connectionURI )
+    bind ( coalesce(uri(concat(str(?protocol),"://",?username,":",?password,"@",str(?host),":",str(?port),str(?queryPath))), "") as ?connectionURI )
     
      Service ?connectionURI {
       ${triplesCondition}  
+    }
+    }}
+  `;
+};
+
+/**
+ * Sparql to retrieve incoming ressources for a given uri 
+ * @param req request with labels body and attributes
+ */
+ export const classTableSparql = (req) => {
+  let subjectFilter = `FILTER (?s in (`;
+  req.attributes.forEach((attr, index) => {
+    subjectFilter += index === 0 ? `<${attr}>` : `,<${attr}>`;
+  });
+subjectFilter += `)) `;
+let predicateFilter = `FILTER (?p in (rdfs:label`;
+req.labels.forEach(label => {
+    predicateFilter += `,<${label}>`;
+});
+predicateFilter += `))`;
+  return constants.QUERY_PREFIXES+`
+  prefix kge:   <https://pid.bayer.com/kge/> 
+  construct {
+  ?s ?p ?o.
+}
+
+where {
+{  
+  values (?triplestore ?namedGraphs) {${joinAsValuesList(req.dbConfig)}
+} 
+  
+  graph <https://pid.bayer.com/kge/triplestores> {
+    ?triplestore a kge:Triplestore ;
+		rdfs:label ?label ;
+        kge:password    ?password ;
+        kge:queryPath   ?queryPath ;
+        kge:runsOn      ?triplestroreSystem ;
+        kge:updatePath  ?updatePath ;
+        kge:user        ?username ;
+  }
+  graph <https://pid.bayer.com/kge/triplestoreSystems> {
+    ?triplestroreSystem 
+        kge:host      ?host ;
+        kge:port      ?port ;
+        kge:protocol  ?protocol .
+  }
+ 
+  bind ( coalesce(uri(concat(str(?protocol),"://",?username,":",?password,"@",str(?host),":",str(?port),str(?queryPath))), "") as ?connectionURI )
+  
+  Service ?connectionURI{
+      graph ?namedGraphs{
+        ?s ?p ?o.
+        ${subjectFilter} 
+        ${predicateFilter}
+} } }}
+  `
+}
+
+/**
+ * Generates sparql to store in redis cache
+ * @param req request with labels body and attributes
+ */
+ export const classTableSparqlFromConfig = (req) => {
+  let sparqlSelect = ``;
+  let sparqlWhere = `?uri a <${req.classUri}> . `
+  let sparqlConstruct = ``
+
+  req.attributes.forEach(attr => {
+      if (attr.uri == 'uri' && attr.display != 'uri') {
+          sparqlSelect += `(?uri as ?${attr.display}) `;
+      } else if (attr.uri == 'uri') {
+          sparqlSelect += `?uri `;
+          sparqlConstruct += `?uri`
+      } else {
+          sparqlSelect += `?${attr.display} `;
+          sparqlWhere += ` OPTIONAL { ?uri <${attr.uri}> ?${attr.display} . }`
+          sparqlConstruct += `?${attr.display}`
+      }
+  });
+  return constants.QUERY_PREFIXES+`
+PREFIX kge:   <https://pid.bayer.com/kge/> SELECT ${sparqlSelect} 
+where {
+{  
+  values (?triplestore ?namedGraphs) {${joinAsValuesList(req.dbConfig)}
+} 
+  
+  graph <https://pid.bayer.com/kge/triplestores> {
+    ?triplestore a kge:Triplestore ; rdfs:label ?label ;
+        kge:password    ?password ;
+        kge:queryPath   ?queryPath ;
+        kge:runsOn      ?triplestroreSystem ;
+        kge:updatePath  ?updatePath ;
+        kge:user        ?username ;
+  }
+  graph <https://pid.bayer.com/kge/triplestoreSystems> {
+    ?triplestroreSystem 
+        kge:host      ?host ;
+        kge:port      ?port ;
+        kge:protocol  ?protocol .
+  }
+ 
+  bind ( coalesce(uri(concat(str(?protocol),'://',?username,':',?password,'@',str(?host),':',str(?port),str(?queryPath))), '') as ?connectionURI )
+  
+  Service ?connectionURI{
+      graph ?namedGraphs{
+        ${sparqlWhere}
+} } }}
+  `
+}
+
+/**
+ * SparQL to post stored queries to the TripleStore
+ * @param host hostname of the rest endpoint
+ * @param query Data that should be stored
+ * @param uuid Unique identifier
+ */
+ export const sparqlPostClassTable = (host,query,uuid,user) => {
+  let data = `INSERT DATA {
+        <${host}/classTable/${uuid}> <https://pid.bayer.com/kge/hasStoredQuery> """${query}""" ;
+        <https://pid.bayer.com/kge/creator> """${user}""" ;
+        <https://pid.bayer.com/kge/creationDate> """${new Date().toISOString()}^^xsd:dateTime"""
+      }`;
+      return data;
+}
+
+  /**
+   * Fetches the query path for savedgraphs and tableviews
+   */
+   export const sparqlGetBasicConfiguration = (datasetLabel) => {
+    return constants.QUERY_PREFIXES+`
+    prefix kge:   <https://pid.bayer.com/kge/> 
+    construct {
+      ?triplestore kge:path ?triplestorePath .
+     }
+     WHERE {{
+       graph <https://pid.bayer.com/kge/basicConfiguration>{
+         ?triplestore rdfs:label "${datasetLabel}" .
+         ?triplestore kge:path ?triplestorePath .
+       }
+     }
+}
+    `
+  }
+
+  export const sparqlFetchTableViewsQuery= (host,uuid) => {
+    return constants.QUERY_PREFIXES+`
+    prefix kge:   <https://pid.bayer.com/kge/> 
+    construct {
+      <${host}/${uuid}> <https://pid.bayer.com/kge/hasStoredQuery> ?sparql .
+     }
+     WHERE {{
+       {
+        <${host}/${uuid}> <https://pid.bayer.com/kge/hasStoredQuery> ?sparql .
+       }
+     }
+}
+    `
+  }
+
+  /**
+ * Sparql to retrieve incoming ressources for a given class 
+ * @param uri The baseUri for what the data should be fetched
+ * @param dbconfig database configuration passed form the ui
+ */
+ export const sparqlIncomingClasses = (uri, dbconfig) => {
+  let defaultGraphsList = joinDefaultGraphs(dbconfig);
+  if (defaultGraphsList !== "") {
+    defaultGraphsList =
+    sparqlClassesIncomingDefaultGraph(defaultGraphsList, uri);
+  } else {
+    defaultGraphsList = `}`;
+  }
+  return constants.QUERY_PREFIXES+`
+  prefix kge:   <https://pid.bayer.com/kge/> 
+  construct {
+  ?s a <${uri}>;
+  ?p2 ?o .
+}
+
+where {
+{  
+  values (?triplestore ?namedGraphs) {${joinAsValuesList(dbconfig)}
+} 
+  
+  graph <https://pid.bayer.com/kge/triplestores> {
+    ?triplestore a kge:Triplestore ;
+		rdfs:label ?label ;
+        kge:password    ?password ;
+        kge:queryPath   ?queryPath ;
+        kge:runsOn      ?triplestroreSystem ;
+        kge:updatePath  ?updatePath ;
+        kge:user        ?username ;
+  }
+  graph <https://pid.bayer.com/kge/triplestoreSystems> {
+    ?triplestroreSystem 
+        kge:host      ?host ;
+        kge:port      ?port ;
+        kge:protocol  ?protocol .
+  }
+ 
+  bind ( coalesce(uri(concat(str(?protocol),"://",?username,":",?password,"@",str(?host),":",str(?port),str(?queryPath))), "") as ?connectionURI )
+  
+  Service ?connectionURI{
+      graph ?namedGraphs{
+        ?s a <${uri}>   ;
+        OPTIONAL{?s ?p2 ?o . 
+}  FILTER (!isLITERAL(?o) || LANG(?o) = "" || LANG(?o) = "en")
+}
+} }${defaultGraphsList}
+  `
+}
+
+
+export const sparqlClassesIncomingDefaultGraph = (defaultGraphsList, uri) => {
+  return `
+  UNION {
+    values (?triplestoreDefault) {${defaultGraphsList}}
+    graph <https://pid.bayer.com/kge/triplestores> {
+    ?triplestoreDefault a kge:Triplestore;
+    rdfs:label ?label ;
+    kge:password ?password ;
+    kge:queryPath ?queryPath ;
+    kge:runsOn ?triplestroreSystem ;
+    kge:updatePath ?updatePath ;
+    kge:user ?username ;
+    }
+    graph <https://pid.bayer.com/kge/triplestoreSystems> {
+    ?triplestroreSystem
+    kge:host ?host ;
+    kge:port ?port ;
+    kge:protocol ?protocol .
+    }
+    
+    bind ( coalesce(uri(concat(str(?protocol),"://",?username,":",?password,"@",str(?host),":",str(?port),str(?queryPath))), "") as ?connectionURI )
+    
+     Service ?connectionURI {
+      ?s a <${uri}>;
     }
     }}
   `;

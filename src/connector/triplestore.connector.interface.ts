@@ -107,7 +107,7 @@ export interface ITripleStoreConnector {
      * @param id Unique uuid to identify stored graph data
      * @returns String in Nquads format
      */
-    getSavedResourcesAsync(id: string): Promise<NquadsString> 
+    getSavedResourcesAsync(id: string,host: string): Promise<NquadsString> 
     
     /**
      * Posts Data to the TripleStore 
@@ -115,7 +115,7 @@ export interface ITripleStoreConnector {
      * @param data the data base64 encoded
      * @returns true if the data was saved successfully
      */
-    postSavedResourcesAsync(id: string, data: any): Promise<Boolean>; 
+    postSavedResourcesAsync(id: string, data: any, host: string): Promise<Boolean>; 
 
     /**
      * Gets all virtual Graphs for a triplestore configuration
@@ -151,6 +151,20 @@ export interface ITripleStoreConnector {
     /**
      * Fetch all triplestores from Configuration Databse
      */
-     getTripleStores(): Promise<NquadsString>
+     getTripleStores(user:string): Promise<NquadsString>
+    /**
+     * Fetch all classtables for given request
+     */
+     fetchClassTable(sparql: string, accept: string): Promise<any>
 
+     postClassTable(host:string, query:string, uuid:string,user:string): Promise<Boolean>
+
+    /**
+     * Fetches the query path for savedgraphs and tableviews
+     */
+     getBasicConfiguration(datasetLabel:string): Promise<NquadsString>
+
+     getTableViewsSparql(host:string,uuid:string): Promise<any>
+
+     getClassTableIncomingAsync(baseNode: string, dbconfig: DbConfig[]): Promise<NquadsString>;
 }
