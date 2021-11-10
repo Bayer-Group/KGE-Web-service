@@ -728,11 +728,11 @@ where {
     return constants.QUERY_PREFIXES+`
     prefix kge:   <https://pid.bayer.com/kge/> 
     construct {
-      <${host}/${uuid}> <https://pid.bayer.com/kge/hasStoredQuery> ?sparql .
+      <${host}/classTable/${uuid}> <https://pid.bayer.com/kge/hasStoredQuery> ?sparql .
      }
      WHERE {{
        {
-        <${host}/${uuid}> <https://pid.bayer.com/kge/hasStoredQuery> ?sparql .
+        <${host}/classTable/${uuid}> <https://pid.bayer.com/kge/hasStoredQuery> ?sparql .
        }
      }
 }
