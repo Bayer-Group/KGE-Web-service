@@ -2,7 +2,7 @@ import { ConfigFile } from "./configfile.model";
 
 export const configdocker: ConfigFile = {
     app: {
-        port: 8080,
+        port: 9090,
         dbRequestTimeout: 60000
     },
     tripleStores: {
